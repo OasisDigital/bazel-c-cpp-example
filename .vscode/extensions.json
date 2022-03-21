@@ -1,0 +1,8 @@
+{
+  "recommendations": [
+    "editorconfig.editorconfig",
+    "bazelbuild.vscode-bazel",
+    "ms-vscode.cpptools-extension-pack",
+    "moshfeu.compare-folders"
+  ]
+}

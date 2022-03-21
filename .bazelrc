@@ -1,0 +1,38 @@
+build --disk_cache=~/.cache/bazel-disk
+fetch --disk_cache=~/.cache/bazel-disk
+query --disk_cache=~/.cache/bazel-disk
+sync --disk_cache=~/.cache/bazel-disk
+test --disk_cache=~/.cache/bazel-disk
+
+# Bazel doesn't have a native understanding of C++ versions. This was
+# added for Java in 2021; hopefully it might arrive for C++ someday.
+
+build --cxxopt='-std=c++17'
+
+# There is also a toolchain selection mechanism suite for
+# cross-platform builds or other customizations to the tool chain. Our
+# repository does not demonstrate that, but it is worthwhile to review
+# the official example:
+
+# https://github.com/bazelbuild/rules_cc/tree/main/examples/custom_toolchain
+
+# Bazel doesn't attempt to be hermetic about the system-provided C
+# toolchain by default. You can set the CC environment var to pick a
+# different local compiler, and that won't invalidate the cache. To
+# get hermetic compiler tooling, use toolchains instead.
+
+# build --repo_env=CC=clang
+
+# work around MacOS C++ debugging bug. A more sophisticated approach
+# would use a --config osx on osx and mark this setting build:osx,
+# to avoid applying this setting elsewhere.
+
+build --spawn_strategy=local
+
+test --keep_going
+test --test_output=errors
+
+# Bazel run output it pretty noisy - see open issue.
+# https://github.com/bazelbuild/bazel/issues/4867
+
+run --ui_event_filters=-DEBUG,-INFO,-stderr --noshow_progress

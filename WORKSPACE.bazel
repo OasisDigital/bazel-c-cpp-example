@@ -1,0 +1,61 @@
+workspace(
+    name = "bazel-c-cpp-example",
+)
+
+load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
+
+# C/C++ support is built in.
+
+# External dependency: GoogleTest ("GTest")
+
+# It ships with a BUILD.bazel already set up, a good example of a
+# medium-complex library build with a single BUILD file:
+# https://github.com/google/googletest/blob/main/BUILD.bazel
+
+# "We recommend building GoogleTest from the latest commit"
+# "We Recommend That You Choose to Live at Head"
+# https://abseil.io/about/philosophy#upgrade-support
+
+GTEST_COMMIT = "28e1da21d8d677bc98f12ccc7fc159ff19e8e817"
+
+GTEST_HASH = "eb70a6d4520f940956a6b3e37d205d92736bb104c6a1b2b9f82bfc41bd7a2b34"
+
+http_archive(
+    name = "com_google_googletest",
+    sha256 = GTEST_HASH,
+    strip_prefix = "googletest-%s" % GTEST_COMMIT,
+    urls = ["https://github.com/google/googletest/archive/%s.zip" % GTEST_COMMIT],
+)
+
+# It is apparently possible, though we haven't found the right
+# invocation, to use GTEST_OS_STACK_TRACE_GETTER_ with a stack
+# unwinder provided by Abseil. It will eventually be in the box
+# automatically:
+# https://github.com/google/googletest/issues/3485
+
+# External dependency: SQLite
+
+# SQLite does not ship with a BUILD file, so we must supply it.
+
+# Tip: Look at other simpler part of this workspace first, before the
+# custom inserted BUILD file.
+
+http_archive(
+    name = "sqlite",
+    build_file = "//third_party:sqlite.BUILD",  # BUILD
+    sha256 = "bd90c3eb96bee996206b83be7065c9ce19aef38c3f4fb53073ada0d0b69bbce3",
+    strip_prefix = "sqlite-autoconf-3360000",
+    urls = [
+        "https://sqlite.org/2021/sqlite-autoconf-3360000.tar.gz",
+    ],
+)
+
+# You can also bring in dependencies using your source control system,
+# such as git with submodules. Then write a BUILD.bazel file one level
+# up from the submodule with cc_library. But that's not any different
+# from code in this repo, from Bazel's point of view, so we don't show
+# an example. Helpful example commands, for those interested:
+
+# cd third_party
+# git submodule add --depth 1 https://github.com/Tencent/rapidjson.git
+# git config -f .gitmodules submodule.path/to/submodule.shallow true
