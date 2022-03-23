@@ -1,8 +1,20 @@
-# C++ Bazel setup
+# Oasis Digital Bazel examples
+
+We use these examples to teach Bazel, but you are welcome to study them
+for your own purposes!
+
+https://oasisdigital.com/class/bazel
+
+## C++ Bazel setup
 
 From a Github comment:
 
-"Bazel is a really hard sell compared to other build systems when it is only usable in one IDE (CLion) and only on one operating system (Linux)."
+"Bazel is a really hard sell compared to other build systems when it is
+only usable in one IDE (CLion) and only on one operating system
+(Linux)."
+
+But things are not as tough as that commenter suggested - many orgs have
+local tweaks to make the tools sufficient for lots of Real Work.
 
 ## IntelliJ (CLion) Bazel integration has trouble on Windows
 
@@ -20,8 +32,8 @@ export DEVELOPER_DIR=/Applications/Xcode.app/Contents/Developer
 
 ## MacOS C/C++ debugging trouble
 
-Debugging is broken by default for C/C++ on MacOS. This issues describes
-the problem and links to several others.
+As of early 2022, debugging is broken by default for C/C++ on MacOS.
+This issues describes the problem and links to several others.
 
 https://github.com/bazelbuild/bazel/issues/6327
 

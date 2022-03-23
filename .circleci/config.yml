@@ -31,7 +31,6 @@ jobs:
       size: large
     steps:
       - checkout
-      - run: systeminfo
 
       - run:
           shell: cmd.exe
