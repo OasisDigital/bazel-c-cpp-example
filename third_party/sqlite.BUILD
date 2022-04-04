@@ -1,9 +1,12 @@
-# Adapted from:
+# A modification of a starting point from:
 # https://github.com/google/asylo
+# with added Windows support
 
 licenses(["unencumbered"])  # Public Domain
 
 SQLITE_COPTS = [
+    # https://sqlite.org/howtocompile.html
+    # https://sqlite.org/compile.html
     "-DSQLITE_BYTEORDER=0",  # Compile-time detection is broken on ppc64le.
     "-DHAVE_DECL_STRERROR_R=1",
     "-DHAVE_FDATASYNC=1",
@@ -20,8 +23,6 @@ SQLITE_COPTS = [
     "-DHAVE_UNISTD_H=1",
     "-DHAVE_USLEEP=1",
     "-DHAVE_GMTIME_R=1",
-    "-DHAVE_LOCALTIME_R=1",
-    "-Wno-error",
     "-w",
     # "-DSQLITE_OMIT_AUTOINIT",  # we must sqlite3_initialize(), else segfault!
     "-DSQLITE_ENABLE_COLUMN_METADATA",
@@ -31,7 +32,13 @@ SQLITE_COPTS = [
     "-DSQLITE_OMIT_LOAD_EXTENSION",
     "-DSQLITE_THREADSAFE=1",
     "-DSQLITE_USE_URI=1",
-]
+] + select({
+    "@bazel_tools//src/conditions:windows": [],
+    "//conditions:default": [
+        "-Wno-error",
+        "-DHAVE_LOCALTIME_R=1",
+    ],
+})
 
 cc_library(
     name = "org_sqlite",
@@ -48,9 +55,12 @@ cc_library(
         # sqlite3.h file.
         "SQLITE_OMIT_DEPRECATED",
     ],
-    linkopts = [
-        "-lpthread",
-    ],
+    # One way to handle platform differences.
+    linkopts =
+        select({
+            "@bazel_tools//src/conditions:windows": [],
+            "//conditions:default": ["-lpthread"],
+        }),
     visibility = ["//visibility:public"],
 )
 

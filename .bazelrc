@@ -7,7 +7,19 @@ test --disk_cache=~/.cache/bazel-disk
 # Bazel doesn't have a native understanding of C++ versions. This was
 # added for Java in 2021; hopefully it might arrive for C++ someday.
 
-build --cxxopt='-std=c++17'
+build --enable_platform_specific_config
+# linux, macos, windows, freebsd, and openbsd.
+
+build:linux --cxxopt='-std=c++17'
+build:macos --cxxopt='-std=c++17'
+build:windows --cxxopt='-std:c++17' # Note slightly different syntax.
+
+# To run tests that use data files on Windows, you either need to turn
+# on use of symlinks on Windows with this setting, or (worse,
+# generally) use a Bazel library in your test code to look up test
+# file locations.
+
+build:windows --enable_runfiles # requires "developer mode"
 
 # There is also a toolchain selection mechanism suite for
 # cross-platform builds or other customizations to the tool chain. Our
@@ -30,7 +42,8 @@ build --cxxopt='-std=c++17'
 build --spawn_strategy=local
 
 test --keep_going
-test --test_output=errors
+test --test_output=all
+# test --test_output=errors
 
 # Bazel run output it pretty noisy - see open issue.
 # https://github.com/bazelbuild/bazel/issues/4867

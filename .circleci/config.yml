@@ -16,7 +16,7 @@ jobs:
           command: |
             apt-get update
             export DEBIAN_FRONTEND=noninteractive
-            apt-get install -q -y curl g++ zlib1g-dev patch
+            apt-get install -q -y curl build-essential zlib1g-dev patch
             curl -sSL https://github.com/bazelbuild/bazelisk/releases/download/v1.10.1/bazelisk-linux-amd64 >/usr/local/bin/bazel
             chmod +x /usr/local/bin/bazel
 
@@ -39,9 +39,26 @@ jobs:
 
       - run:
           command: |
+            $ErrorActionPreference = "Stop"
+
             bazel build '...'
+            if ($LastExitCode -ne 0) {throw "Failed"}
+
             bazel test //speller/greeting:greeting-test
-            echo TODO make the data file handling work on Windows also
+            if ($LastExitCode -ne 0) {throw "Failed"}
+
+            bazel test --test_output=errors '...'
+            if ($LastExitCode -ne 0) {throw "Failed"}
+
+            bazel test '...' --test_verbose_timeout_warnings
+            if ($LastExitCode -ne 0) {throw "Failed"}
+
+            bazel run //speller/main:build-dictionary
+            if ($LastExitCode -ne 0) {throw "Failed"}
+
+            echo TODO translate exercise.sh to Powershell
+            bazel query --notool_deps --noimplicit_deps "deps(//speller/main)" --output graph
+            if ($LastExitCode -ne 0) {throw "Failed"}
 
 workflows:
   version: 2
